@@ -6,16 +6,10 @@ import org.slf4j.LoggerFactory
 /**
  * 扩展变量获取logger
  */
-inline val <T : Any> T.logger: Logger
+inline val <T : Any> T.kLogger: Logger
     get() = LoggerFactory.getLogger(this.javaClass)
 
-/**
- * android log风格命名
- */
-inline val <T : Any> T.Log: Logger
-    get() = LoggerFactory.getLogger(this.javaClass)
-
-fun logger(name: String): Logger = LoggerFactory.getLogger(name)
+fun logFor(name: String): Logger = LoggerFactory.getLogger(name)
 
 
 fun Logger.i(tag: String, msg: String, throwable: Throwable? = null) {

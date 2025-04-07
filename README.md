@@ -3,8 +3,56 @@
 1. slf4j不鼓励直接进行字符串拼接，而是使用{}这样的占位符。
 2. slf4j支持Supplier接口（需要配合fluent api），可以在日志输出时才进行必要的逻辑计算，避免在不需要打印日志时耗费资源。
 
+## 获取logger方式
+
+1. 在类中直接引入
+```kotlin
+class Main {
+    fun test(){
+        kLogger.info("hello")
+    }
+}
+```
+
+2. 继承Logging接口
+```kotlin
+class Main2{
+    fun test(){
+        kLogger.info("hello")
+    }
+    companion object :Logging{}
+}
+```
+
+3. 调用logger方法
+```kotlin
+    val logger1 = logFor("test")
+```
+
 ## kotlin的包装
-fluent api & 占位符 &  Supplier接口
+### kotlin api
+在kotlin中，字符串模版是StringBuilder的简化，所以kotlin中可以采用字符串模版来替代占位符。
+
+ ```
+ fun test2() {
+     val logger = org.slf4j.LoggerFactory.getLogger("Main")
+     val user = "tom"
+     val marker = "SECURITY".asMarker();
+     logger.info(marker = marker) { "loginUser1: $user" }
+     logger.debug(marker = marker, throwable = NullPointerException("test")) { "loginUser2: $user" }
+     logger.debug {
+          //逻辑可以写在这，避免提前计算。
+          //比如当前日志等级为Error，那么debug等级的日志输出就不会执行，
+          //如果把逻辑写在外面，结果是即使不输出日志也会执行逻辑。
+          val time = SimpleDateFormat("yyyy-MM-dd").format(Date())
+          //最终拼接字符串
+          "Now time is $time"
+     }
+ }
+ ```
+
+
+### fluent api & 占位符 &  Supplier接口
  ```
  fun test1() {
      val logger = LoggerFactory.getLogger("main")
@@ -28,27 +76,6 @@ fluent api & 占位符 &  Supplier接口
  }
  ```
 
- kotlin api
-  在kotlin中，字符串模版是StringBuilder的简化，所以kotlin中可以采用字符串模版来替代占位符。
-
- ```
- fun test2() {
-     //getLogger传入的name相当于android log中的tag
-     val logger = org.slf4j.LoggerFactory.getLogger("Main")
-     val user = "tom"
-     val marker = "SECURITY".asMarker();
-     logger.info(marker = marker) { "loginUser1: $user" }
-     logger.debug(marker = marker, throwable = NullPointerException("test")) { "loginUser2: $user" }
-     logger.debug {
-          //逻辑可以写在这，避免提前计算。
-          //比如当前日志等级为Error，那么debug等级的日志输出就不会执行，
-          //如果把逻辑写在外面，结果是即使不输出日志也会执行逻辑。
-          val time = SimpleDateFormat("yyyy-MM-dd").format(Date())
-          //最终拼接字符串
-          "Now time is $time"
-     }
- }
- ```
 
 
 ## ContextStack
